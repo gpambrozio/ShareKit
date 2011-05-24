@@ -167,11 +167,11 @@
 		[item setCustomValue:body forKey:@"body"];
 	}
 	
-	if (item.data)		
+	if (item.data)
 		[mailController addAttachmentData:item.data mimeType:item.mimeType fileName:item.filename];
 	
 	if (item.image)
-		[mailController addAttachmentData:UIImageJPEGRepresentation(item.image, 1) mimeType:@"image/jpeg" fileName:@"Image.jpg"];
+		[mailController addAttachmentData:UIImageJPEGRepresentation(item.image, 0.9f) mimeType:@"image/jpeg" fileName:@"Image.jpg"];
 	
 	[mailController setSubject:item.title];
 	[mailController setMessageBody:body isHTML:YES];
