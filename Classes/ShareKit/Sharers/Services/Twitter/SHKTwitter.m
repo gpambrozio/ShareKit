@@ -36,7 +36,7 @@
 
 - (id)init
 {
-	if (self = [super init])
+	if ((self = [super init]))
 	{	
 		// OAUTH		
 		self.consumerKey = SHKTwitterConsumerKey;		
@@ -289,7 +289,7 @@
 - (BOOL)validate
 {
 	NSString *status = [item customValueForKey:@"status"];
-	return status != nil && status.length >= 0 && status.length <= 140;
+	return status != nil && status.length > 0 && status.length <= 140;
 }
 
 - (BOOL)send
@@ -399,7 +399,7 @@
 	if([item customValueForKey:@"profile_update"]){
 		serviceURL = [NSURL URLWithString:@"http://api.twitter.com/1/account/update_profile_image.json"];
 	} else {
-		serviceURL = [NSURL URLWithString:@"https://api.twitter.com/1/account/verify_credentials.json"];
+		serviceURL = [NSURL URLWithString:@"https://api.twitter.com/1/account/verify_credentials.xml"];
 	}
 	
 	OAMutableURLRequest *oRequest = [[OAMutableURLRequest alloc] initWithURL:serviceURL
@@ -408,42 +408,27 @@
 																	   realm:@"http://api.twitter.com/"
 														   signatureProvider:signatureProvider];
 	[oRequest setHTTPMethod:@"GET"];
+    [oRequest prepare];
 	
-	if([item customValueForKey:@"profile_update"]){
-		[oRequest prepare];
-	} else {
-		[oRequest prepare];
+	if([item customValueForKey:@"profile_update"] == nil){
 		
 		NSDictionary * headerDict = [oRequest allHTTPHeaderFields];
 		NSString * oauthHeader = [NSString stringWithString:[headerDict valueForKey:@"Authorization"]];
-		
+        
 		[oRequest release];
 		oRequest = nil;
 		
-		serviceURL = [NSURL URLWithString:@"http://img.ly/api/2/upload.xml"];
+		serviceURL = [NSURL URLWithString:@"https://yfrog.com/api/xauth_upload"];
 		oRequest = [[OAMutableURLRequest alloc] initWithURL:serviceURL
 												   consumer:consumer
 													  token:accessToken
 													  realm:@"http://api.twitter.com/"
 										  signatureProvider:signatureProvider];
 		[oRequest setHTTPMethod:@"POST"];
-		[oRequest setValue:@"https://api.twitter.com/1/account/verify_credentials.json" forHTTPHeaderField:@"X-Auth-Service-Provider"];
+		[oRequest setValue:@"https://api.twitter.com/1/account/verify_credentials.xml" forHTTPHeaderField:@"X-Auth-Service-Provider"];
 		[oRequest setValue:oauthHeader forHTTPHeaderField:@"X-Verify-Credentials-Authorization"];
-	}
-	
-	CGFloat compression = 0.9f;
-	NSData *imageData = UIImageJPEGRepresentation([item image], compression);
-	
-	// TODO
-	// Note from Nate to creator of sendImage method - This seems like it could be a source of sluggishness.
-	// For example, if the image is large (say 3000px x 3000px for example), it would be better to resize the image
-	// to an appropriate size (max of img.ly) and then start trying to compress.
-	
-	while ([imageData length] > 700000 && compression > 0.1) {
-		// NSLog(@"Image size too big, compression more: current data size: %d bytes",[imageData length]);
-		compression -= 0.1;
-		imageData = UIImageJPEGRepresentation([item image], compression);
-		
+        
+        CMLog(@"Authorization header: %@", oauthHeader);
 	}
 	
 	NSString *boundary = @"0xKhTmLbOuNdArY";
@@ -458,22 +443,22 @@
 		dispKey = @"Content-Disposition: form-data; name=\"media\"; filename=\"upload.jpg\"\r\n";
 	}
 	
-	
+	if([item customValueForKey:@"profile_update"] == nil){
+        // yFrog API Key
+        [body appendData:[[NSString stringWithFormat:@"--%@\r\n",boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithString:@"Content-Disposition: form-data; name=\"key\"\r\n\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[SHKYFrogAPIKey dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];	
+    }
+    
+	// Image
 	[body appendData:[[NSString stringWithFormat:@"--%@\r\n",boundary] dataUsingEncoding:NSUTF8StringEncoding]];
 	[body appendData:[dispKey dataUsingEncoding:NSUTF8StringEncoding]];
 	[body appendData:[@"Content-Type: image/jpg\r\n\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
-	[body appendData:imageData];
+	[body appendData:[item imageData]];
 	[body appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
-	
-	if([item customValueForKey:@"profile_update"]){
-		// no ops
-	} else {
-		[body appendData:[[NSString stringWithFormat:@"--%@\r\n",boundary] dataUsingEncoding:NSUTF8StringEncoding]];
-		[body appendData:[[NSString stringWithString:@"Content-Disposition: form-data; name=\"message\"\r\n\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
-		[body appendData:[[item customValueForKey:@"status"] dataUsingEncoding:NSUTF8StringEncoding]];
-		[body appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];	
-	}
-	
+
+	// End
 	[body appendData:[[NSString stringWithFormat:@"--%@--\r\n",boundary] dataUsingEncoding:NSUTF8StringEncoding]];
 	
 	// setting the body of the post to the reqeust
@@ -496,15 +481,15 @@
 
 - (void)sendImageTicket:(OAServiceTicket *)ticket didFinishWithData:(NSData *)data {
 	// TODO better error handling here
-	// NSLog([[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] autorelease]);
+	CMLog(@"Response: %@", [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] autorelease]);
 	
 	if (ticket.didSucceed) {
 		[self sendDidFinish];
 		// Finished uploading Image, now need to posh the message and url in twitter
 		NSString *dataString = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] autorelease];
-		NSRange startingRange = [dataString rangeOfString:@"<url>" options:NSCaseInsensitiveSearch];
+		NSRange startingRange = [dataString rangeOfString:@"<mediaurl>" options:NSCaseInsensitiveSearch];
 		//NSLog(@"found start string at %d, len %d",startingRange.location,startingRange.length);
-		NSRange endingRange = [dataString rangeOfString:@"</url>" options:NSCaseInsensitiveSearch];
+		NSRange endingRange = [dataString rangeOfString:@"</mediaurl>" options:NSCaseInsensitiveSearch];
 		//NSLog(@"found end string at %d, len %d",endingRange.location,endingRange.length);
 		
 		if (startingRange.location != NSNotFound && endingRange.location != NSNotFound) {
@@ -513,7 +498,6 @@
 			[item setCustomValue:[NSString stringWithFormat:@"%@ %@",[item customValueForKey:@"status"],urlString] forKey:@"status"];
 			[self sendStatus];
 		}
-		
 		
 	} else {
 		[self sendDidFailWithError:nil];
