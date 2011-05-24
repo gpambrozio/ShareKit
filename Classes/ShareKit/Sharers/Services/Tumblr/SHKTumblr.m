@@ -108,11 +108,12 @@ static NSString * const kTumblrWriteURL = @"https://www.tumblr.com/api/write";
 
 #pragma mark -
 #pragma mark Authorize form
-- (NSArray *)authorizationFormFields{
++ (NSArray *)authorizationFormFields 
+{
 	return [NSArray arrayWithObjects:
 			[SHKFormFieldSettings label:SHKLocalizedString(@"Email")
                                     key:@"email"
-                                   type:SHKFormFieldTypeText
+                                   type:SHKFormFieldTypeEmail
                                   start:nil],
 			[SHKFormFieldSettings label:SHKLocalizedString(@"Password")
                                     key:@"password"
