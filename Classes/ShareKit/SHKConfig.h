@@ -1,25 +1,17 @@
-
-
-
-
-
 // PLEASE SEE INSTALL/CONFIG INSTRUCTIONS:
 // http://getsharekit.com/install
-
-
-
-
 
 
 // App Description
 // These values are used by any service that shows 'shared from XYZ'
 
-#define SHKMyAppName			@"My App Name"
-#define SHKMyAppURL				@"http://example.com"
+#define SHKMyAppName			[AppUtils bundleKeyOrPrefValue:@"kAppName"]
+#define SHKMyAppURL				[AppUtils bundleKeyOrPrefValue:@"kSiteURL"]
 
+#define SHKMaxImageShareDimension     1024
+#define SHKMaxImageByteSize           700000
 
-
-/*
+/* 
  API Keys
  --------
  This is the longest step to getting set up, it involves filling in API keys for the supported services.
@@ -37,6 +29,22 @@
  */
 
 
+// Evernote - http://www.evernote.com/about/developer/api/
+
+#define SHKEvernoteConsumerKey      [AppUtils bundleKeyOrPrefValue:@"kSHKEvernoteConsumerKey"]
+#define SHKEvernoteSecretKey        [AppUtils bundleKeyOrPrefValue:@"kSHKEvernoteSecretKey"]
+
+#ifdef DEBUG
+
+#define SHKEvernoteUserStoreURL     @"https://sandbox.evernote.com/edam/user"
+#define SHKEvernoteNetStoreURLBase  @"https://sandbox.evernote.com/edam/note/"
+
+#else
+
+#define SHKEvernoteUserStoreURL     [AppUtils bundleKeyOrPrefValue:@"kSHKEvernoteUserStoreURL"]
+#define SHKEvernoteNetStoreURLBase  [AppUtils bundleKeyOrPrefValue:@"kSHKEvernoteNetStoreURLBase"]
+
+#endif
 
 // Delicious - https://developer.apps.yahoo.com/projects
 #define SHKDeliciousConsumerKey		@""
@@ -46,8 +54,8 @@
 // If SHKFacebookUseSessionProxy is enabled then SHKFacebookSecret is ignored and should be left blank
 
 #define SHKFacebookUseSessionProxy  NO 
-#define SHKFacebookKey				@""
-#define SHKFacebookSecret			@""
+#define SHKFacebookKey				[AppUtils bundleKeyOrPrefValue:@"kSHKFacebookKey"]
+#define SHKFacebookSecret			[AppUtils bundleKeyOrPrefValue:@"kSHKFacebookSecret"]
 #define SHKFacebookSessionProxyURL  @""
 
 // Read It Later - http://readitlaterlist.com/api/?shk
@@ -69,11 +77,11 @@
  2. 'Application Type' should be set to BROWSER (not client)
  3. 'Callback URL' should match whatever you enter in SHKTwitterCallbackUrl.  The callback url doesn't have to be an actual existing url.  The user will never get to it because ShareKit intercepts it before the user is redirected.  It just needs to match.
  */
-#define SHKTwitterConsumerKey		@""
-#define SHKTwitterSecret			@""
-#define SHKTwitterCallbackUrl		@"" // You need to set this if using OAuth, see note above (xAuth users can skip it)
+#define SHKTwitterConsumerKey		[AppUtils bundleKeyOrPrefValue:@"kSHKTwitterConsumerKey"]
+#define SHKTwitterSecret			[AppUtils bundleKeyOrPrefValue:@"kSHKTwitterSecret"]
+#define SHKTwitterCallbackUrl		[AppUtils bundleKeyOrPrefValue:@"kSHKTwitterCallbackUrl"]          // You need to set this if using OAuth, see note above (xAuth users can skip it)
 #define SHKTwitterUseXAuth			0 // To use xAuth, set to 1
-#define SHKTwitterUsername			@"" // Enter your app's twitter account if you'd like to ask the user to follow it when logging in. (Only for xAuth)
+#define SHKTwitterUsername			[AppUtils bundleKeyOrPrefValue:@"kSHKTwitterUsername"] // Enter your app's twitter account if you'd like to ask the user to follow it when logging in. (Only for xAuth)
 
 // Bit.ly (for shortening URLs on Twitter) - http://bit.ly/account/register - after signup: http://bit.ly/a/your_api_key
 #define SHKBitLyLogin				@""
@@ -83,8 +91,10 @@
 #define SHKShareMenuAlphabeticalOrder 1 // Setting this to 1 will show list in Alphabetical Order, setting to 0 will follow the order in SHKShares.plist
 
 // Append 'Shared With 'Signature to Email (and related forms)
-#define SHKSharedWithSignature		0
+#define SHKSharedWithSignature		1
 
+// Yfrog
+#define SHKYFrogAPIKey              [AppUtils bundleKeyOrPrefValue:@"kSHKYFrogAPIKey"]
 
 
 /*
@@ -94,10 +104,10 @@
  */
 
 // Toolbars
-#define SHKBarStyle					@"UIBarStyleDefault" // See: http://developer.apple.com/iphone/library/documentation/UIKit/Reference/UIKitDataTypesReference/Reference/reference.html#//apple_ref/c/econst/UIBarStyleDefault
-#define SHKBarTintColorRed			-1 // Value between 0-255, set all to -1 for default
-#define SHKBarTintColorGreen		-1 // Value between 0-255, set all to -1 for default
-#define SHKBarTintColorBlue			-1 // Value between 0-255, set all to -1 for default
+#define SHKBarStyle					@"UIBarStyleBlackOpaque" // See: http://developer.apple.com/iphone/library/documentation/UIKit/Reference/UIKitDataTypesReference/Reference/reference.html#//apple_ref/c/econst/UIBarStyleDefault
+#define SHKBarTintColorRed			0x55 // Value between 0-255, set all to -1 for default
+#define SHKBarTintColorGreen		0x55 // Value between 0-255, set all to -1 for default
+#define SHKBarTintColorBlue			0x55 // Value between 0-255, set all to -1 for default
 
 // Forms
 #define SHKFormFontColorRed			-1 // Value between 0-255, set all to -1 for default
@@ -116,7 +126,7 @@
 #define SHKShareMenuAlphabeticalOrder 1 // Setting this to 1 will show list in Alphabetical Order, setting to 0 will follow the order in SHKShares.plist
 
 // Append 'Shared With 'Signature to Email (and related forms)
-#define SHKSharedWithSignature		0
+#define SHKSharedWithSignature		1
 
 /*
  UI Configuration : Advanced
@@ -139,15 +149,20 @@
  2. comment out section A below
  */
 
+
 // A : show debug output
-//#define SHKDebugShowLogs			1
-//#define SHKLog( s, ... ) NSLog( @"<%p %@:(%d)> %@", self, [[NSString stringWithUTF8String:__FILE__] lastPathComponent], __LINE__, [NSString stringWithFormat:(s), ##__VA_ARGS__] )
+#ifdef DEBUG
+
+#define SHKDebugShowLogs			1
+#define SHKLog( s, ... ) NSLog( @"<%p %@:(%d)> %@", self, [[NSString stringWithUTF8String:__FILE__] lastPathComponent], __LINE__, [NSString stringWithFormat:(s), ##__VA_ARGS__] )
+
+#else
 
 // B : hide debug output
 #define SHKDebugShowLogs			0
 #define SHKLog( s, ... ) 
 
-
+#endif
 
 /*
  Advanced Configuration
