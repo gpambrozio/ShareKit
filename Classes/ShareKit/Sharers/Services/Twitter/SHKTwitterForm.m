@@ -114,23 +114,11 @@
 	CGRect keyboardFrame;
 	CGFloat keyboardHeight;
 	
-	// 3.2 and above
-	/*if (UIKeyboardFrameEndUserInfoKey)
-	 {		
 	 [[notification.userInfo valueForKey:UIKeyboardFrameEndUserInfoKey] getValue:&keyboardFrame];		
 	 if ([[UIDevice currentDevice] orientation] == UIDeviceOrientationPortrait || [[UIDevice currentDevice] orientation] == UIDeviceOrientationPortraitUpsideDown) 
-	 keyboardHeight = keyboardFrame.size.height;
+	     keyboardHeight = keyboardFrame.size.height;
 	 else
-	 keyboardHeight = keyboardFrame.size.width;
-	 }
-	 
-	 // < 3.2
-	 else 
-	 {*/
-
-	[[notification.userInfo valueForKey:UIKeyboardBoundsUserInfoKey] getValue:&keyboardFrame];
-	keyboardHeight = keyboardFrame.size.height;
-	//}
+	     keyboardHeight = keyboardFrame.size.width;
 	
 	// Find the bottom of the screen (accounting for keyboard overlay)
 	// This is pretty much only for pagesheet's on the iPad
@@ -172,7 +160,7 @@
 		[counter release];
 	}
 	
-	int count = (hasAttachment?115:140) - textView.text.length;
+	int count = (hasAttachment?110:140) - textView.text.length;
 	counter.text = [NSString stringWithFormat:@"%@%i", hasAttachment ? @"Image + ":@"" , count];
 	counter.textColor = count >= 0 ? [UIColor blackColor] : [UIColor redColor];
 }
@@ -210,7 +198,7 @@
 
 - (void)save
 {	
-	if (textView.text.length > (hasAttachment?115:140))
+	if (textView.text.length > (hasAttachment?110:140))
 	{
 		[[[[UIAlertView alloc] initWithTitle:SHKLocalizedString(@"Message is too long")
 									 message:SHKLocalizedString(@"Twitter posts can only be 140 characters in length.")
