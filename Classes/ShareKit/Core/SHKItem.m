@@ -135,6 +135,40 @@
 	return [[custom objectForKey:key] isEqualToString:SHKFormFieldSwitchOn];
 }
 
+- (NSData*)imageData {
+    UIImage *img = [self image];
+    CGSize imageSize = [img size];
+    
+    if (imageSize.width > SHKMaxImageShareDimension || imageSize.height > SHKMaxImageShareDimension) {
+        CGFloat scale = SHKMaxImageShareDimension / MAX(imageSize.width, imageSize.height);
+        imageSize = CGSizeMake(imageSize.width * scale, imageSize.height * scale);
+        CMLog(@"Image too large. rescaling to %.0f x %.0f", imageSize.width, imageSize.height);
+        
+        UIGraphicsBeginImageContext(imageSize);
+        
+        [img drawInRect:CGRectMake(0.0f, 0.0f, imageSize.width, imageSize.height)];
+        
+        UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
+        if (newImage == nil) {
+            CMLog(@"could not scale image");
+        } else {
+            img = newImage;
+        }
+        
+        UIGraphicsEndImageContext();
+    }
+    
+	CGFloat compression = 0.8f;
+	NSData *imageData = UIImageJPEGRepresentation(img, compression);
+	
+	while ([imageData length] > SHKMaxImageByteSize && compression > 0.1) {
+        CMLog(@"Image size too big, compressing more: current data size: %d bytes",[imageData length]);
+		compression -= 0.1;
+		imageData = UIImageJPEGRepresentation(img, compression);
+	}
+    
+    return imageData;
+}
 
 #pragma mark -
 

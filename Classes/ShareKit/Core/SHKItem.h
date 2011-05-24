@@ -62,6 +62,7 @@ typedef enum
 @property (nonatomic, retain)	NSURL *URL;
 
 @property (nonatomic, retain)	UIImage *image;
+@property (nonatomic, readonly) NSData *imageData; 
 
 @property (nonatomic, retain)	NSString *title;
 @property (nonatomic, retain)	NSString *text;
