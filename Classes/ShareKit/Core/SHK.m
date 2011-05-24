@@ -143,6 +143,8 @@ BOOL SHKinit;
 			nav.modalTransitionStyle = [SHK modalTransitionStyle];
 		
 		nav.navigationBar.barStyle = nav.toolbar.barStyle = [SHK barStyle];
+        if (SHKBarTintColorRed != -1)
+            nav.navigationBar.tintColor = nav.toolbar.tintColor = RGBCOLOR(SHKBarTintColorRed, SHKBarTintColorGreen, SHKBarTintColorBlue);
 		
 		[topViewController presentModalViewController:nav animated:YES];			
 		self.currentView = nav;
@@ -158,8 +160,10 @@ BOOL SHKinit;
 			vc.modalTransitionStyle = [SHK modalTransitionStyle];
 		
 		[topViewController presentModalViewController:vc animated:YES];
-		[(UINavigationController *)vc navigationBar].barStyle = 
-		[(UINavigationController *)vc toolbar].barStyle = [SHK barStyle];
+		[(UINavigationController *)vc navigationBar].barStyle = [(UINavigationController *)vc toolbar].barStyle = [SHK barStyle];
+        if (SHKBarTintColorRed != -1)
+            [(UINavigationController *)vc navigationBar].tintColor = [(UINavigationController *)vc toolbar].tintColor = RGBCOLOR(SHKBarTintColorRed, SHKBarTintColorGreen, SHKBarTintColorBlue);
+
 		self.currentView = vc;
 	}
 		
@@ -466,7 +470,7 @@ static NSDictionary *sharersDictionary = nil;
 	
 	// store image in cache
 	if (item.shareType == SHKShareTypeImage && item.image)
-		[UIImageJPEGRepresentation(item.image, 1) writeToFile:[[self offlineQueuePath] stringByAppendingPathComponent:uid] atomically:YES];
+		[UIImageJPEGRepresentation(item.image, 1.0f) writeToFile:[[self offlineQueuePath] stringByAppendingPathComponent:uid] atomically:YES];
 	
 	// store file in cache
 	else if (item.shareType == SHKShareTypeFile)
