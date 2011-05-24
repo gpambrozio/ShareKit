@@ -217,12 +217,14 @@
 
 		note.title = item.title.length > 0 ?
     	item.title :
-      ( [note titleIsSet] ?
-            note.title :
-            SHKLocalizedString(@"Untitled") );
+        ( [note titleIsSet] ?
+         note.title :
+         SHKLocalizedString(@"Untitled") );
 
-		if(![note tagNamesIsSet]&&item.tags)
-    	[note setTagNames:[item.tags componentsSeparatedByString:@" "]];
+		if (![note tagNamesIsSet] && item.tags)
+            [note setTagNames:[item.tags componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@" ,"]]];
+		else if (![note tagNamesIsSet])
+            [note setTagNames:[NSArray arrayWithObject:@"Snap"]];
 
 		if(![note contentIsSet]) {
 			NSMutableString* contentStr = [[NSMutableString alloc] initWithString:kENMLPrefix];
@@ -241,7 +243,7 @@
 
 			if(item.image) {
 				EDAMResource *img = [[[EDAMResource alloc] init] autorelease];
-				NSData *rawimg = UIImageJPEGRepresentation(item.image, 0.6);
+				NSData *rawimg = [item imageData];
 				EDAMData *imgd = [[[EDAMData alloc] initWithBodyHash:rawimg size:[rawimg length] body:rawimg] autorelease];
 				[img setData:imgd];
 				[img setRecognition:imgd];
