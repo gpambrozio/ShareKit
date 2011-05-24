@@ -31,7 +31,8 @@ typedef enum
 {
 	SHKFormFieldTypeText,
 	SHKFormFieldTypePassword,
-	SHKFormFieldTypeSwitch
+	SHKFormFieldTypeSwitch,
+    SHKFormFieldTypeEmail
 } SHKFormFieldType;
 
 #define SHKFormFieldSwitchOff @"0"

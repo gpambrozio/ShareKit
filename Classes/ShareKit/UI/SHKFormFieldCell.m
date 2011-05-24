@@ -72,9 +72,11 @@
 {
 	[super layoutSubviews];	
 	
-	if (settings.type == SHKFormFieldTypeText || settings.type == SHKFormFieldTypePassword)
+	if (settings.type == SHKFormFieldTypeText || settings.type == SHKFormFieldTypePassword || settings.type == SHKFormFieldTypeEmail)
 	{
 		self.textField.secureTextEntry = settings.type == SHKFormFieldTypePassword;
+        if (settings.type == SHKFormFieldTypeEmail)
+            self.textField.keyboardType = UIKeyboardTypeEmailAddress;
 		
 		textField.frame = CGRectMake(labelWidth + SHK_FORM_CELL_PAD_LEFT, 
 									 2 + round(self.contentView.bounds.size.height/2 - textField.bounds.size.height/2),
