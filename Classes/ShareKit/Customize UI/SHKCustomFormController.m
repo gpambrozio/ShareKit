@@ -32,4 +32,69 @@
 
 // See http://getsharekit.com/customize/ for additional information on customizing
 
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    
+    // Change the background color to something yellow/paperishy
+    self.tableView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"fundo.png"]];
+}
+
+// Create a custom footer label so we can style it
+- (UIView *)tableView:(UITableView *)tableView 
+viewForFooterInSection:(NSInteger)section
+{
+	NSString *footerTitle = [self tableView:tableView 
+                    titleForFooterInSection:section];
+    
+	if (footerTitle)
+	{
+		// Create a view to put the label in so we have some padding
+        CGRect wrapperFrame = CGRectMake(0,0,tableView.frame.size.width,50);
+		UIView *wrapper = [[UIView alloc] initWithFrame:wrapperFrame];
+		wrapper.autoresizesSubviews = YES;
+		wrapper.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+		
+		// Create the label
+		CGRect labelFrame = CGRectMake(round(tableView.frame.size.width/2-300/2),
+                                       0,
+                                       300,
+                                       50);
+		UILabel *label = [[UILabel alloc] initWithFrame:labelFrame];
+		label.backgroundColor = [UIColor clearColor];
+		label.opaque = NO;
+		label.textColor = [UIColor whiteColor];
+		label.font = [UIFont systemFontOfSize:14];
+		
+		label.textAlignment = UITextAlignmentCenter;
+		label.lineBreakMode = UILineBreakModeWordWrap;
+		label.numberOfLines = 0;
+		
+		label.text = footerTitle;
+		
+		label.autoresizesSubviews = YES;
+		label.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
+		
+		[wrapper addSubview:label];
+		[label release];
+		
+		return [wrapper autorelease];
+	}
+	
+	return nil;
+}
+
+// Set the height of our label (when we have one to display)
+- (CGFloat)tableView:(UITableView *)tableView 
+heightForFooterInSection:(NSInteger)section
+{
+	NSString *footerTitle = [self tableView:tableView 
+                    titleForFooterInSection:section];
+
+	if (footerTitle)
+		return 50;
+	
+	return 0;
+}
+
 @end
