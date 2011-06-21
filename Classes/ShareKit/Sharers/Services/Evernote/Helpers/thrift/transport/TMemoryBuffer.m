@@ -24,7 +24,7 @@
 
 @implementation TMemoryBuffer
 - (id)init {
-	if (self = [super init]) {
+	if ((self = [super init])) {
 		mBuffer = [[NSMutableData alloc] init];
 		mOffset = 0;
 	}
@@ -32,7 +32,7 @@
 }
 
 - (id)initWithData:(NSData *)data {
-	if (self = [super init]) {
+	if ((self = [super init])) {
 		mBuffer = [data mutableCopy];
 		mOffset = 0;
 	}

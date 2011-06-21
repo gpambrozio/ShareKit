@@ -51,7 +51,8 @@ static FBSession* sharedSession = nil;
     delegate:(id<FBSessionDelegate>)delegate {
   FBSession* session = [[[FBSession alloc] initWithKey:key secret:secret
     getSessionProxy:nil] autorelease];
-  [session.delegates addObject:delegate];
+  if (delegate)
+    [session.delegates addObject:delegate];
   return session;
 }
 
@@ -59,7 +60,8 @@ static FBSession* sharedSession = nil;
     delegate:(id<FBSessionDelegate>)delegate {
   FBSession* session = [[[FBSession alloc] initWithKey:key secret:nil
     getSessionProxy:getSessionProxy] autorelease];
-  [session.delegates addObject:delegate];
+  if (delegate)
+    [session.delegates addObject:delegate];
   return session;
 }
 
@@ -161,7 +163,7 @@ static FBSession* sharedSession = nil;
 
 - (FBSession*)initWithKey:(NSString*)key secret:(NSString*)secret
     getSessionProxy:(NSString*)getSessionProxy {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     if (!sharedSession) {
       sharedSession = self;
     }

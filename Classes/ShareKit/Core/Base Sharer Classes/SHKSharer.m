@@ -162,7 +162,7 @@
 
 - (id)init
 {
-	if (self = [super initWithNibName:nil bundle:nil])
+	if ((self = [super initWithNibName:nil bundle:nil]))
 	{
 		self.shareDelegate = self;
 		self.item = [[[SHKItem alloc] init] autorelease];
@@ -570,6 +570,9 @@
 		case SHKShareTypeFile:
 			return (item.data != nil);
 			break;
+        default:
+            break;
+            
 	}
 	
 	return NO;
