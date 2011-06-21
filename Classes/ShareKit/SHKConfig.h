@@ -34,17 +34,8 @@
 #define SHKEvernoteConsumerKey      [AppUtils bundleKeyOrPrefValue:@"kSHKEvernoteConsumerKey"]
 #define SHKEvernoteSecretKey        [AppUtils bundleKeyOrPrefValue:@"kSHKEvernoteSecretKey"]
 
-#ifdef DEBUG
-
-#define SHKEvernoteUserStoreURL     @"https://sandbox.evernote.com/edam/user"
-#define SHKEvernoteNetStoreURLBase  @"https://sandbox.evernote.com/edam/note/"
-
-#else
-
 #define SHKEvernoteUserStoreURL     [AppUtils bundleKeyOrPrefValue:@"kSHKEvernoteUserStoreURL"]
 #define SHKEvernoteNetStoreURLBase  [AppUtils bundleKeyOrPrefValue:@"kSHKEvernoteNetStoreURLBase"]
-
-#endif
 
 // Delicious - https://developer.apps.yahoo.com/projects
 #define SHKDeliciousConsumerKey		@""
@@ -97,8 +88,8 @@
 #define SHKYFrogAPIKey              [AppUtils bundleKeyOrPrefValue:@"kSHKYFrogAPIKey"]
 
 // Flickr - http://www.flickr.com/services/apps/create/
-#define SHKFlickrConsumerKey @""	// The consumer key
-#define SHKFlickrSecretKey @""		// The secret key
+#define SHKFlickrConsumerKey        [AppUtils bundleKeyOrPrefValue:@"kSHKFlickrConsumerKey"] 	// The consumer key
+#define SHKFlickrSecretKey          [AppUtils bundleKeyOrPrefValue:@"kSHKFlickrSecretKey"]  // The secret key
 #define SHKFlickrCallbackUrl @"app://flickr"	// The user defined callback url
 
 
