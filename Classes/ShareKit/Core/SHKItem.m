@@ -144,7 +144,10 @@
         imageSize = CGSizeMake(imageSize.width * scale, imageSize.height * scale);
         CMLog(@"Image too large. rescaling to %.0f x %.0f", imageSize.width, imageSize.height);
         
-        UIGraphicsBeginImageContext(imageSize);
+        if (NULL != UIGraphicsBeginImageContextWithOptions)
+            UIGraphicsBeginImageContextWithOptions(imageSize, YES, 1.0f);
+        else
+            UIGraphicsBeginImageContext(imageSize);
         
         [img drawInRect:CGRectMake(0.0f, 0.0f, imageSize.width, imageSize.height)];
         
