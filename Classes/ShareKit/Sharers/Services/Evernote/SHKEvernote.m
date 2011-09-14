@@ -7,6 +7,7 @@
 //
 
 #import "SHKEvernote.h"
+#import "SHKEvernoteFormController.h"
 #import "THTTPClient.h"
 #import "TBinaryProtocol.h"
 #import "NSData+md5.h"
@@ -75,6 +76,20 @@
 	// Authorize the user through the server
 	self.pendingForm = form;
 	[NSThread detachNewThreadSelector:@selector(_authorizationFormValidate:) toTarget:self withObject:[form formValues]];
+}
+
+- (void)authorizationFormShow
+{	
+	// Create the form
+	SHKEvernoteFormController *form = [[SHKEvernoteFormController alloc] initWithStyle:UITableViewStyleGrouped title:SHKLocalizedString(@"Login") rightButtonTitle:SHKLocalizedString(@"Login")];
+	[form addSection:[self authorizationFormFields] header:nil footer:[self authorizationFormCaption]];
+	form.delegate = self;
+	form.validateSelector = @selector(authorizationFormValidate:);
+	form.saveSelector = @selector(authorizationFormSave:);
+	form.autoSelect = YES;
+	
+	[[SHK currentHelper] showViewController:form];
+	[form release];
 }
 
 - (void)_authorizationFormValidate:(NSDictionary *)args 
@@ -235,10 +250,9 @@
         	[contentStr appendFormat:@"<h1><a href=\"%@\">%@</a></h1>",strURL,item.title];
       	[contentStr appendFormat:@"<p><a href=\"%@\">%@</a></p>",strURL,strURL];
         atr.sourceURL = strURL;
-      } else if(item.title.length>0)
-        [contentStr appendFormat:@"<h1>%@</h1>",item.title];
+      }
 
-			if(item.text.length>0 )
+            if(item.text.length>0 )
       	[contentStr appendFormat:@"<p>%@</p>",item.text];
 
 			if(item.image) {
