@@ -127,7 +127,12 @@ BOOL SHKinit;
 	if (currentView != nil)
 	{
 		self.pendingView = vc;
-		[[currentView parentViewController] dismissModalViewControllerAnimated:YES];
+        UIViewController *parentController;
+        if ([currentView respondsToSelector:@selector(presentingViewController)])       // iOS 5 only
+            parentController = [currentView performSelector:@selector(presentingViewController)];
+        else
+            parentController = [currentView parentViewController];
+		[parentController dismissModalViewControllerAnimated:YES];
 		return;
 	}
 		
@@ -183,10 +188,16 @@ BOOL SHKinit;
 	if (currentView != nil)
 	{
 		// Dismiss the modal view
-		if ([currentView parentViewController] != nil)
+        UIViewController *parentController;
+        if ([currentView respondsToSelector:@selector(presentingViewController)])       // iOS 5 only
+            parentController = [currentView performSelector:@selector(presentingViewController)];
+        else
+            parentController = [currentView parentViewController];
+            
+		if (parentController != nil)
 		{
 			self.isDismissingView = YES;
-			[[currentView parentViewController] dismissModalViewControllerAnimated:animated];
+			[parentController dismissModalViewControllerAnimated:animated];
 		}
 		
 		else
